@@ -8,6 +8,7 @@ import {
   motion,
   animate,
 } from "framer-motion";
+import axios from "axios";
 
 const COLORS_TOP = ["#13FFAA", "#1E67C6", "#CE84CF", "#DD335C"];
 
@@ -27,6 +28,17 @@ export const AuroraHero = () => {
   const border = useMotionTemplate`1px solid ${color}`;
   const boxShadow = useMotionTemplate`0px 4px 24px ${color}`;
 
+  async function handleClick() {
+    const response = await axios
+      .post("http://localhost:3000/api/users/login")
+      .then(() => {
+        console.log(response.data);
+      })
+      .catch(() => {
+        console.error(error);
+      });
+  }
+
   return (
     <motion.section
       style={{
@@ -45,6 +57,7 @@ export const AuroraHero = () => {
           Decrease your SaaS churn by over 90% with our innovative solutions
         </p>
         <motion.button
+          onClick={handleClick}
           style={{
             border,
             boxShadow,
