@@ -3,16 +3,18 @@ import { render, screen, fireEvent } from '@testing-library/react'
 
 // Mock all the problematic dependencies
 vi.mock('@react-three/fiber', () => ({
-  Canvas: ({ children }) => <div data-testid="canvas">{children}</div>, // eslint-disable-line react/prop-types
+  Canvas: ({ children }) => <div data-testid='canvas'>{children}</div>, // eslint-disable-line react/prop-types
 }))
 
 vi.mock('@react-three/drei', () => ({
-  Stars: () => <div data-testid="stars" />,
+  Stars: () => <div data-testid='stars' />,
 }))
 
 vi.mock('framer-motion', () => ({
   motion: {
-    section: ({ children, ...props }) => <section {...props}>{children}</section>,
+    section: ({ children, ...props }) => (
+      <section {...props}>{children}</section>
+    ),
     button: ({ children, ...props }) => <button {...props}>{children}</button>,
   },
   useMotionTemplate: () => 'mocked-template',
@@ -49,7 +51,9 @@ describe('AuroraHero', () => {
     expect(
       screen.getByText(/with our innovative solutions/i)
     ).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /start free trial/i })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: /start free trial/i })
+    ).toBeInTheDocument()
   })
 
   it('calls API on button click (success case)', async () => {
@@ -84,6 +88,4 @@ describe('AuroraHero', () => {
 
     consoleSpy.mockRestore()
   })
-
-
 })
