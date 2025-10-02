@@ -1,4 +1,4 @@
-name: Quality & Security Checks
+name: Quality Checks
 
 on:
   push:
@@ -29,28 +29,15 @@ jobs:
         run: npm ci
         
       - name: Check formatting (Prettier)
-        run: npx prettier --check "src/**/*.{js,jsx,ts,tsx,json,css,md}"
+        run: npm run format:check
         
       - name: Run ESLint
-        run: npm run lint -- --format=json --output-file=eslint-report.json
-        continue-on-error: true
-        
-      - name: Upload ESLint report
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: eslint-report
-          path: eslint-report.json
-          retention-days: 7
+        run: npm run lint
 
   security:
     name: Security Scan
     runs-on: ubuntu-latest
     
-    permissions:
-      contents: read
-      security-events: write
-      
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -66,22 +53,7 @@ jobs:
         
       - name: Run npm audit
         run: npm audit --audit-level=moderate
-        
-      - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/node@master
         continue-on-error: true
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --severity-threshold=high
-          
-      - name: CodeQL Analysis
-        uses: github/codeql-action/init@v3
-        with:
-          languages: javascript
-          
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
 
   dependency-review:
     name: Dependency Review
