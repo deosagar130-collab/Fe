@@ -1,9 +1,9 @@
-import { describe, it, expect, vi } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { render, screen, fireEvent } from '@testing-library/react'
 
 // Mock all the problematic dependencies
 vi.mock('@react-three/fiber', () => ({
-  Canvas: ({ children }) => <div data-testid="canvas">{children}</div>,
+  Canvas: ({ children }) => <div data-testid="canvas">{children}</div>, // eslint-disable-line react/prop-types
 }))
 
 vi.mock('@react-three/drei', () => ({
@@ -29,6 +29,8 @@ vi.mock('axios', () => ({
 import axios from 'axios'
 import { AuroraHero } from '../components/Hero'
 
+// Constants
+const API_URL = 'http://localhost:3000/api/users/login'
 const mockedAxios = vi.mocked(axios)
 
 describe('AuroraHero', () => {
@@ -36,7 +38,7 @@ describe('AuroraHero', () => {
     vi.clearAllMocks()
   })
 
-  it('renders all hero elements correctly', () => {
+  it('renders hero content correctly', () => {
     render(<AuroraHero />)
 
     expect(screen.getByText('Now Live!')).toBeInTheDocument()
@@ -45,41 +47,43 @@ describe('AuroraHero', () => {
       'Decrease your SaaS churn by over 90%'
     )
     expect(
-      screen.getByText(
-        /Decrease your SaaS churn by over 90% with our innovative solutions/i
-      )
+      screen.getByText(/with our innovative solutions/i)
     ).toBeInTheDocument()
-    expect(screen.getByText('Start free trial')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /start free trial/i })).toBeInTheDocument()
   })
 
-  it('handles button click and API call', async () => {
-    mockedAxios.post.mockResolvedValue({ data: { success: true } })
+  it('calls API on button click (success case)', async () => {
+    mockedAxios.post.mockResolvedValueOnce({ data: { success: true } })
 
     render(<AuroraHero />)
 
-    const button = screen.getByText('Start free trial')
+    const button = screen.getByRole('button', { name: /start free trial/i })
     fireEvent.click(button)
 
-    await waitFor(() => {
-      expect(mockedAxios.post).toHaveBeenCalledWith(
-        'http://localhost:3000/api/users/login'
-      )
-    })
+    // Check API call
+    expect(mockedAxios.post).toHaveBeenCalledWith(API_URL)
+
+    // If your component updates UI on success, assert here:
+    // expect(await screen.findByText(/welcome/i)).toBeInTheDocument()
   })
 
   it('handles API error gracefully', async () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-    mockedAxios.post.mockRejectedValue(new Error('API Error'))
+    mockedAxios.post.mockRejectedValueOnce(new Error('API Error'))
 
     render(<AuroraHero />)
 
-    const button = screen.getByText('Start free trial')
+    const button = screen.getByRole('button', { name: /start free trial/i })
     fireEvent.click(button)
 
-    await waitFor(() => {
-      expect(mockedAxios.post).toHaveBeenCalled()
-    })
+    // Still called even though it failed
+    expect(mockedAxios.post).toHaveBeenCalledWith(API_URL)
+
+    // If your component shows error message, assert it here:
+    // expect(await screen.findByText(/something went wrong/i)).toBeInTheDocument()
 
     consoleSpy.mockRestore()
   })
+
+
 })

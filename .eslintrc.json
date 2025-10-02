@@ -18,6 +18,12 @@
     "node": true
   },
   "plugins": ["react", "react-hooks", "react-refresh"],
+  "ignorePatterns": [
+    "node_modules/",
+    "dist/",
+    "build/",
+    "coverage/"
+  ],
   "rules": {
     "react/react-in-jsx-scope": "off",
     "react/prop-types": "warn",
