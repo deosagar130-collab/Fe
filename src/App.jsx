@@ -1,11 +1,11 @@
-import { AuroraHero } from "./components/Hero";
+import { AuroraHero } from './components/Hero'
 
 function App() {
   return (
-    <div className="App">
+    <div className='App'>
       <AuroraHero />
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
