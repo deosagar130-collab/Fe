@@ -60,7 +60,7 @@
         "vi": "readonly"
       },
       "rules": {
-        "no-console": "off"
+        "no-console": "on"
       }
     }
   ]
