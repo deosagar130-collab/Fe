@@ -10,7 +10,7 @@ import {
 } from 'framer-motion'
 import axios from 'axios'
 
-const COLORS_TOP = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4']
+const COLORS_TOP = ['#FF6B6B', '#4ECDC4', '#45B7D1']
 
 export const AuroraHero = () => {
   const color = useMotionValue(COLORS_TOP[0])
