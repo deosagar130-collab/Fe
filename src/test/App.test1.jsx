@@ -1,31 +1,39 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, test, beforeEach, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import App from '../App'
 
-// Mock the Hero component to avoid Three.js issues
-vi.mock('../components/Hero', () => ({
-  AuroraHero: () => (
-    <div>
-      <span>Now Live!</span>
-      <h1>Decrease your SaaS churn by over 90%</h1>
-      <button>Start free trial</button>
-    </div>
-  ),
-}))
+// Provide a lightweight mock for the 3D Hero to avoid Three.js in tests
+const MockAuroraHero = () => (
+  <section aria-label="hero">
+    <span>Now Live!</span>
+    <h1>Decrease your SaaS churn by over 90%</h1>
+    <button type="button">Start free trial</button>
+  </section>
+)
+
+vi.mock('../components/Hero', () => ({ AuroraHero: MockAuroraHero }))
 
 describe('App', () => {
-  it('renders the hero component', () => {
+  beforeEach(() => {
     render(<App />)
+  })
 
-    // Check if the main heading is rendered
+  test('shows the main hero heading', () => {
     expect(
-      screen.getByText(/Decrease your SaaS churn by over 90%/i)
+      screen.getByRole('heading', {
+        level: 1,
+        name: /Decrease your SaaS churn by over 90%/i,
+      })
     ).toBeInTheDocument()
+  })
 
-    // Check if the CTA button is rendered
-    expect(screen.getByText(/Start free trial/i)).toBeInTheDocument()
+  test('renders the primary CTA button', () => {
+    expect(
+      screen.getByRole('button', { name: /Start free trial/i })
+    ).toBeInTheDocument()
+  })
 
-    // Check if the "Now Live!" badge is rendered
+  test('displays the "Now Live!" badge', () => {
     expect(screen.getByText(/Now Live!/i)).toBeInTheDocument()
   })
 })
